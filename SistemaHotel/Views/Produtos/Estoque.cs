@@ -8,14 +8,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using SistemaHotel.Model.Classes.Contextos;
 
 namespace SistemaHotel.Produtos
 {
     public partial class FrmEstoque : Form
     {
 
-   
-       
+
+
         string id;
 
         public FrmEstoque()
@@ -25,6 +26,10 @@ namespace SistemaHotel.Produtos
 
         private void CarregarCombobox()
         {
+            var contexto = new ContextoFornecedor();
+            cbFornecedor.DataSource = contexto.fornecedor.ToList();
+            cbFornecedor.DisplayMember = "Nome";
+            cbFornecedor.ValueMember = "Id";
 
         }
 
@@ -57,7 +62,7 @@ namespace SistemaHotel.Produtos
             txtProduto.Text = "";
             txtValor.Text = "";
             txtEstoque.Text = "";
-                       txtQuantidade.Text = "";
+            txtQuantidade.Text = "";
         }
 
 
@@ -80,6 +85,7 @@ namespace SistemaHotel.Produtos
 
         private void FrmEstoque_Activated(object sender, EventArgs e)
         {
+            id = Program.idProduto;
             txtEstoque.Text = Program.estoqueProduto;
             txtProduto.Text = Program.nomeProduto;
         }
@@ -102,12 +108,32 @@ namespace SistemaHotel.Produtos
             }
 
             //CÓDIGO DO BOTÃO PARA EDITAR OS PRODUTOS
+            var contexto = new ContextoProduto();
+            var produto = contexto.produto.FirstOrDefault(x => x.Id.ToString() == id);
+            
+            
+            produto.Estoque += Convert.ToInt32(txtQuantidade.Text);
+            
+            produto.Valor = Convert.ToDecimal(txtValor.Text);
+
+            contexto.SaveChanges();
+
 
 
             MessageBox.Show("Lançamento Feito com Sucesso!", "Dados Editados", MessageBoxButtons.OK, MessageBoxIcon.Information);
-           
+
             limparCampos();
             desabilitarCampos();
+        }
+
+        private void txtEstoque_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtProduto_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

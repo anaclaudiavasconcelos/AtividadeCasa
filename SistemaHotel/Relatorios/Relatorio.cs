@@ -8,6 +8,7 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using System.Linq;
 
 namespace SistemaHotel.Relatorios
 {
@@ -22,8 +23,10 @@ namespace SistemaHotel.Relatorios
         {
             var tabela = new DataSet1();
 
-           // new DataSet1TableAdapters.VendasTableAdapter().Fill(tabela.Vendas);
+            //new DataSet1TableAdapters.VendasTableAdapter().Fill(tabela.Vendas);
 
+            //new DataSet1TableAdapters.VendasTableAdapter().Fill(tabela.Vendas);
+            
             reportViewer1 = new ReportViewer { Dock = DockStyle.Fill };
 
             var arquivoRelatorio = File.OpenRead(Path.GetFullPath(@"C:\Users\anali\Documents\SistemaHotelAnimado\SistemaHotel\SistemaHotel\SistemaHotel\Relatorios\rela.rdlc"));

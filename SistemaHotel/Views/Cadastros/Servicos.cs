@@ -146,8 +146,10 @@ namespace SistemaHotel.Cadastros
 
             //CÓDIGO DO BOTÃO PARA EDITAR
             var contexto = new ContextoServico();
-            contexto.servico.FirstOrDefault(x => x.Id.ToString() == id).NomeServico = txtNome.Text;
-            contexto.servico.FirstOrDefault(x => x.Id.ToString() == id).ValorServico = decimal.Parse(txtValor.Text);
+
+            var servico = contexto.servico.FirstOrDefault(x => x.Id.ToString() == id);
+            servico.NomeServico = txtNome.Text;
+            servico.ValorServico = decimal.Parse(txtValor.Text);
             contexto.SaveChanges();
 
 

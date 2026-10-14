@@ -1,4 +1,6 @@
 ﻿
+using SistemaHotel.Model.Classes.Contextos;
+using SistemaHotel.Model.Classes.Entidades;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -25,6 +27,11 @@ namespace SistemaHotel.Produtos
 
         private void CarregarCombobox()
         {
+            var contexto = new ContextoFornecedor();
+            cbFornecedor.DataSource = contexto.fornecedor.ToList();
+            cbFornecedor.DisplayMember = "Nome";
+            cbFornecedor.ValueMember = "Id";
+
 
         }
 
@@ -45,7 +52,16 @@ namespace SistemaHotel.Produtos
 
         private void BuscarNome()
         {
-
+            ContextoProduto contexto = new ContextoProduto();
+            var lista = contexto.produto.ToList();
+            if (txtBuscarNome.Text != "")
+            {
+                grid.DataSource = lista.Where(x => x.Nome.Contains(txtBuscarNome.Text)).ToList();
+            }
+            else
+            {
+                grid.DataSource = lista;
+            }
 
             FormatarDG();
         }
@@ -136,6 +152,27 @@ namespace SistemaHotel.Produtos
 
 
             //CÓDIGO DO BOTÃO PARA SALVAR
+            ContextoProduto contexto = new ContextoProduto();
+            var produto = new Produto(txtNome.Text, txtDescricao.Text, cbFornecedor.Text, Convert.ToDecimal(txtValor.Text));
+            contexto.produto.Add(produto);
+            contexto.SaveChanges();
+
+            grid.DataSource = contexto.produto.Select(x => new
+            {
+                x.Id,
+                x.Nome,
+                x.Descricao,
+                x.Estoque,
+                x.Fornecedor,
+                x.Valor
+
+            }).ToList();
+            grid.Columns[0].HeaderText = "Código";
+            grid.Columns[1].HeaderText = "Nome";
+            grid.Columns[2].HeaderText = "Descrição";
+            grid.Columns[3].HeaderText = "Estoque";
+            grid.Columns[4].HeaderText = "Fornecedor";
+            grid.Columns[5].HeaderText = "Valor";
 
 
             MessageBox.Show("Registro Salvo com Sucesso!", "Dados Salvo", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -164,6 +201,16 @@ namespace SistemaHotel.Produtos
             }
 
             //CÓDIGO DO BOTÃO PARA EDITAR
+            var contexto = new ContextoProduto();
+
+            var produto = contexto.produto.FirstOrDefault(x => x.Id.ToString() == id);
+            produto.Nome = txtNome.Text;
+            produto.Descricao = txtDescricao.Text;
+            produto.Estoque = Convert.ToInt32(txtEstoque.Text);
+            produto.Fornecedor = cbFornecedor.Text;
+            produto.Valor = Convert.ToDecimal(txtValor.Text);
+
+            contexto.SaveChanges();
 
 
             MessageBox.Show("Registro Editado com Sucesso!", "Dados Editados", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -181,7 +228,10 @@ namespace SistemaHotel.Produtos
             if (resultado == DialogResult.Yes)
             {
                 //CÓDIGO DO BOTÃO PARA EXCLUIR
-  
+                var contexto = new ContextoProduto();
+                contexto.produto.Remove(contexto.produto.FirstOrDefault(x => x.Id.ToString() == id));
+                contexto.SaveChanges();
+
 
                 MessageBox.Show("Registro Excluido com Sucesso!", "Registro Excluido", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 btnNovo.Enabled = true;

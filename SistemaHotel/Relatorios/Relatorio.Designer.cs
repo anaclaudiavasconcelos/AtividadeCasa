@@ -28,16 +28,15 @@
         /// </summary>
         private void InitializeComponent()
         {
-            reportViewer1 = new Microsoft.Reporting.WinForms.ReportViewer();
+            dataSet11 = new SistemaHotel.Dados.DataSet1();
+            ((System.ComponentModel.ISupportInitialize)dataSet11).BeginInit();
             SuspendLayout();
             // 
-            // reportViewer1
+            // dataSet11
             // 
-            reportViewer1.Location = new System.Drawing.Point(0, 0);
-            reportViewer1.Name = "ReportViewer";
-            reportViewer1.ServerReport.BearerToken = null;
-            reportViewer1.Size = new System.Drawing.Size(396, 246);
-            reportViewer1.TabIndex = 0;
+            dataSet11.DataSetName = "DataSet1";
+            dataSet11.Namespace = "http://tempuri.org/DataSet1.xsd";
+            dataSet11.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
             // 
             // Relatorio
             // 
@@ -47,11 +46,15 @@
             Name = "Relatorio";
             Text = "Relatorio";
             Load += Relatorio_Load;
+            ((System.ComponentModel.ISupportInitialize)dataSet11).EndInit();
             ResumeLayout(false);
         }
 
         #endregion
 
         private Microsoft.Reporting.WinForms.ReportViewer reportViewer1;
+        private Microsoft.Reporting.WinForms.ReportViewer reportViewer2;
+        private Microsoft.Reporting.WinForms.ReportViewer reportViewer3;
+        private Dados.DataSet1 dataSet11;
     }
 }

@@ -109,7 +109,9 @@ namespace SistemaHotel.Cadastros
             //CÓDIGO DO BOTÃO PARA EDITAR
 
             var contexto = new ContextoCargo();
-            contexto.cargo.FirstOrDefault(x => x.Id.ToString() == id).NomeDoCargo = txtNome.Text;
+
+            var cargo = contexto.cargo.FirstOrDefault(x => x.Id.ToString() == id);
+            cargo.NomeDoCargo = txtNome.Text;
             contexto.SaveChanges();
 
             MessageBox.Show("Registro Editado com Sucesso!", "Dados Editados", MessageBoxButtons.OK, MessageBoxIcon.Information);

@@ -197,6 +197,7 @@
             txtBuscarCPF.Size = new System.Drawing.Size(152, 27);
             txtBuscarCPF.TabIndex = 61;
             txtBuscarCPF.Visible = false;
+            txtBuscarCPF.MaskInputRejected += txtBuscarCPF_MaskInputRejected;
             txtBuscarCPF.TextChanged += TxtBuscarCPF_TextChanged;
             // 
             // rbNome

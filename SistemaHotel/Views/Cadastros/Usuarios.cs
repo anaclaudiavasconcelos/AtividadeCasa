@@ -1,4 +1,6 @@
 ﻿
+using SistemaHotel.Model.Classes.Contextos;
+using SistemaHotel.Model.Classes.Entidades;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -27,6 +29,10 @@ namespace SistemaHotel.Cadastros
 
         private void CarregarCombobox()
         {
+            var contexto = new ContextoCargo();
+            cbCargo.DataSource = contexto.cargo.ToList();
+            cbCargo.DisplayMember = "NomeDoCargo";
+            cbCargo.ValueMember = "Id";
 
         }
 
@@ -39,7 +45,8 @@ namespace SistemaHotel.Cadastros
         private void Listar()
         {
 
-
+            var contexto = new ContextoUsuario();
+            grid.DataSource = contexto.usuario.ToList();
 
             FormatarDG();
         }
@@ -50,7 +57,16 @@ namespace SistemaHotel.Cadastros
 
         private void BuscarNome()
         {
-
+            ContextoUsuario contexto = new ContextoUsuario();
+            var lista = contexto.usuario.ToList();
+            if (txtBuscarNome.Text != "")
+            {
+                grid.DataSource = lista.Where(x => x.Nome.Contains(txtBuscarNome.Text)).ToList();
+            }
+            else
+            {
+                grid.DataSource = lista;
+            }
 
             FormatarDG();
         }
@@ -120,23 +136,44 @@ namespace SistemaHotel.Cadastros
                 return;
             }
 
-          
 
 
-            //CÓDIGO DO BOTÃO PARA SALVAR
-  
+
+
+
+
 
             //VERIFICAR SE O NOME DE USUÁRIO JÁ EXISTE NO BANCO
+            ContextoUsuario contexto = new ContextoUsuario();
+            var usuarioExistente = contexto.usuario.FirstOrDefault(x => x.Usuarios == txtUsuario.Text);
 
-            if (false) // Aqui você deve colocar a lógica para verificar se o usuário já existe no banco de dados
+            if (usuarioExistente != null) // Aqui você deve colocar a lógica para verificar se o usuário já existe no banco de dados
             {
                 MessageBox.Show("Usuário já Registrado!", "Erro ao Salva", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtUsuario.Text = "";
                 txtUsuario.Focus();
                 return;
             }
-            
 
+            //CÓDIGO DO BOTÃO PARA SALVAR
+            
+            var usuario = new Usuario(txtNome.Text, cbCargo.Text, txtUsuario.Text, txtSenha.Text);
+            contexto.usuario.Add(usuario);
+            contexto.SaveChanges();
+
+            grid.DataSource = contexto.usuario.Select(x => new
+            {
+                x.Id,
+                x.Nome,
+                x.Cargo,
+                x.Usuarios,
+                x.Senha
+            }).ToList();
+            grid.Columns[0].HeaderText = "Código";
+            grid.Columns[1].HeaderText = "Nome";
+            grid.Columns[2].HeaderText = "Cargo";
+            grid.Columns[3].HeaderText = "Usuário";
+            grid.Columns[4].HeaderText = "Senha";
 
 
             MessageBox.Show("Registro Salvo com Sucesso!", "Dados Salvo", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -157,26 +194,39 @@ namespace SistemaHotel.Cadastros
                 return;
             }
 
-           
 
 
-            //CÓDIGO DO BOTÃO PARA EDITAR
+
 
 
 
 
             //VERIFICAR SE O USUARIO JÁ EXISTE NO BANCO
+            
 
             if (txtUsuario.Text != usuarioAntigo)
             {
+                var contexto = new ContextoUsuario();
 
-                if (false) // Aqui você deve colocar a lógica para verificar se o usuário já existe no banco de dados
+                var usuarioExistente = contexto.usuario.FirstOrDefault(x => x.Usuarios == txtUsuario.Text);
+
+                if (usuarioExistente != null) // Aqui você deve colocar a lógica para verificar se o usuário já existe no banco de dados
                 {
                     MessageBox.Show("Usuário já Registrado!", "Erro ao Salvar", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtUsuario.Text = "";
                     txtUsuario.Focus();
                     return;
                 }
+
+                //CÓDIGO DO BOTÃO PARA EDITAR
+                
+
+                var usuario = contexto.usuario.FirstOrDefault(x => x.Id.ToString() == id);
+                usuario.Nome = txtNome.Text;
+                usuario.Usuarios = txtUsuario.Text;
+                usuario.Cargo = cbCargo.Text;
+                usuario.Senha = txtSenha.Text;
+                contexto.SaveChanges();
 
             }
 
@@ -215,7 +265,9 @@ namespace SistemaHotel.Cadastros
             if (resultado == DialogResult.Yes)
             {
                 //CÓDIGO DO BOTÃO PARA EXCLUIR
- 
+                var contexto = new ContextoUsuario();
+                contexto.usuario.Remove(contexto.usuario.FirstOrDefault(x => x.Id.ToString() == id));
+                contexto.SaveChanges();
 
                 MessageBox.Show("Registro Excluido com Sucesso!", "Registro Excluido", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 btnNovo.Enabled = true;

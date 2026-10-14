@@ -169,10 +169,15 @@ namespace SistemaHotel.Cadastros
 
             //CÓDIGO DO BOTÃO PARA EDITAR
             var contexto = new ContextoFornecedor();
-            contexto.fornecedor.FirstOrDefault(x => x.Id.ToString() == id).Nome = txtNome.Text;
-            contexto.fornecedor.FirstOrDefault(x => x.Id.ToString() == id).Endereco = txtEndereco.Text;
-            contexto.fornecedor.FirstOrDefault(x => x.Id.ToString() == id).Telefone = txtTelefone.Text;
+
+            var fornecedor = contexto.fornecedor.FirstOrDefault(x => x.Id.ToString() == id);
+            fornecedor.Nome = txtNome.Text;
+            fornecedor.Endereco = txtEndereco.Text;
+            fornecedor.Telefone = txtTelefone.Text;
+            
+
             contexto.SaveChanges();
+
 
 
             MessageBox.Show("Registro Editado com Sucesso!", "Dados Editados", MessageBoxButtons.OK, MessageBoxIcon.Information);

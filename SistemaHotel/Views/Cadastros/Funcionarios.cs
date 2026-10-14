@@ -1,4 +1,6 @@
 ﻿
+using SistemaHotel.Model.Classes.Contextos;
+using SistemaHotel.Model.Classes.Entidades;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -27,7 +29,10 @@ namespace SistemaHotel.Cadastros
 
         private void CarregarCombobox()
         {
-
+            var contexto = new ContextoCargo();
+            cbCargo.DataSource = contexto.cargo.ToList();
+            cbCargo.DisplayMember = "NomeDoCargo";
+            cbCargo.ValueMember = "Id";
         }
 
 
@@ -39,7 +44,8 @@ namespace SistemaHotel.Cadastros
         private void Listar()
         {
 
-
+            var contexto = new ContextoFuncionario();
+            grid.DataSource = contexto.funcionario.ToList();
 
             FormatarDG();
         }
@@ -47,7 +53,16 @@ namespace SistemaHotel.Cadastros
 
         private void BuscarNome()
         {
-
+            ContextoFuncionario contexto = new ContextoFuncionario();
+            var lista = contexto.funcionario.ToList();
+            if (txtBuscarNome.Text != "")
+            {
+                grid.DataSource = lista.Where(x => x.Nome.Contains(txtBuscarNome.Text)).ToList();
+            }
+            else
+            {
+                grid.DataSource = lista;
+            }
 
             FormatarDG();
         }
@@ -55,7 +70,16 @@ namespace SistemaHotel.Cadastros
 
         private void BuscarCPF()
         {
-
+            ContextoFuncionario contexto = new ContextoFuncionario();
+            var lista = contexto.funcionario.ToList();
+            if (txtBuscarCPF.Text != "")
+            {
+                grid.DataSource = lista.Where(x => x.Cpf.Contains(txtBuscarCPF.Text)).ToList();
+            }
+            else
+            {
+                grid.DataSource = lista;
+            }
 
             FormatarDG();
         }
@@ -155,14 +179,37 @@ namespace SistemaHotel.Cadastros
 
 
             //CÓDIGO DO BOTÃO PARA SALVAR
+            ContextoFuncionario contexto = new ContextoFuncionario();
+            var funcionario = new Funcionario(txtNome.Text, txtCPF.Text, txtEndereco.Text, txtTelefone.Text, cbCargo.Text);
+            contexto.funcionario.Add(funcionario);
+            contexto.SaveChanges();
+
+            grid.DataSource = contexto.funcionario.Select(x => new
+            {
+                x.Id,
+                x.Nome,
+                x.Cpf,
+                x.Endereco,
+                x.Telefone,
+                x.Cargo
+
+            }).ToList();
+            grid.Columns[0].HeaderText = "Código";
+            grid.Columns[1].HeaderText = "Nome";
+            grid.Columns[2].HeaderText = "CPF";
+            grid.Columns[3].HeaderText = "Endereço";
+            grid.Columns[4].HeaderText = "Telefone";
+            grid.Columns[5].HeaderText = "Cargo";
+
 
 
 
             //VERIFICAR SE O CPF JÁ EXISTE NO BANCO
             string cpf = txtCPF.Text;
+            var funcionarioExistente = contexto.funcionario.FirstOrDefault(x => x.Cpf == cpf);
 
 
-            if (cpf.Equals("123456"))
+            if (funcionarioExistente != null)
             {
                 MessageBox.Show("CPF já Registrado!", "Dados Salvo", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtCPF.Text = "";
@@ -203,17 +250,20 @@ namespace SistemaHotel.Cadastros
             }
 
 
-            //CÓDIGO DO BOTÃO PARA EDITAR
-
+            
 
 
 
             //VERIFICAR SE O CPF JÁ EXISTE NO BANCO
+            string cpf = txtCPF.Text;
+            var contexto = new ContextoFuncionario();
 
             if (txtCPF.Text != cpfAntigo)
             {
+               
+                var funcionarioExistente = contexto.funcionario.FirstOrDefault(x => x.Cpf == cpf);
 
-                if (false) // Substitua 'false' pela condição real para verificar se o CPF existe no banco de dados.
+                if (funcionarioExistente != null) // Substitua 'false' pela condição real para verificar se o CPF existe no banco de dados.
                 {
                     MessageBox.Show("CPF já Registrado!", "Dados Salvo", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     txtCPF.Text = "";
@@ -223,6 +273,15 @@ namespace SistemaHotel.Cadastros
 
             }
 
+            //CÓDIGO DO BOTÃO PARA EDITAR
+            
+            var funcionario = contexto.funcionario.FirstOrDefault(x => x.Id.ToString() == id);
+            funcionario.Nome = txtNome.Text;
+            funcionario.Cpf = txtCPF.Text;
+            funcionario.Endereco = txtEndereco.Text;
+            funcionario.Cargo = cbCargo.Text;
+
+            contexto.SaveChanges();
 
 
 
@@ -241,6 +300,9 @@ namespace SistemaHotel.Cadastros
             if (resultado == DialogResult.Yes)
             {
                 //CÓDIGO DO BOTÃO PARA EXCLUIR
+                var contexto = new ContextoFuncionario();
+                contexto.funcionario.Remove(contexto.funcionario.FirstOrDefault(x => x.Id.ToString() == id));
+                contexto.SaveChanges();
 
 
                 MessageBox.Show("Registro Excluido com Sucesso!", "Registro Excluido", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -292,6 +354,11 @@ namespace SistemaHotel.Cadastros
         }
 
         private void cbCargo_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtBuscarCPF_MaskInputRejected(object sender, MaskInputRejectedEventArgs e)
         {
 
         }

@@ -14,7 +14,7 @@ namespace SistemaHotel.Model.Classes.Contextos
         //Métodos
         protected override void OnConfiguring(DbContextOptionsBuilder opcoesDeConstrucao)
         {
-            string caminho = @"Server=ANACLAUDIA\SQLEXPRESS;Database=SistemaHotel;Trusted_Connection=True;TrustServerCertificate=True";
+            string caminho = Environment.GetEnvironmentVariable("db1");
             opcoesDeConstrucao.UseSqlServer(caminho);
         }
 
